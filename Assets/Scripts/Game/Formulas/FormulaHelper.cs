@@ -531,10 +531,11 @@ namespace DaggerfallWorkshop.Game.Formulas
         /// </summary>
         /// <param name="attacker">Attacking entity</param>
         /// <param name="target">Target entity</param>
-        /// <param name="isEnemyFacingAwayFromPlayer">Whether enemy is facing away from player, used for backstabbing</param>
+        /// <param name="isEnemyFacingAwayFromPlayer">Whether enemy is facing away from player, used for backstabbing</param> // 背对
         /// <param name="weaponAnimTime">Time the weapon animation lasted before the attack in ms, used for bow drawing </param>
         /// <param name="weapon">The weapon item being used</param>
         /// <returns>Damage inflicted to target, can be 0 for a miss or ineffective hit</returns>
+        // 对目标造成的伤害，可以为0为未命中或无效命中
         public static int CalculateAttackDamage(DaggerfallEntity attacker, DaggerfallEntity target, bool isEnemyFacingAwayFromPlayer, int weaponAnimTime, DaggerfallUnityItem weapon)
         {
             if (attacker == null || target == null)
@@ -557,6 +558,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             // For some enemies this gives lower damage than similar-tier monsters
             // and the weaponless values seems more appropriate, so here
             // enemies will choose to use their weaponless attack if it is more damaging.
+            // 如果空手的伤害比持武器伤害大，默认空手
             EnemyEntity AIAttacker = attacker as EnemyEntity;
             if (AIAttacker != null && weapon != null)
             {
@@ -572,6 +574,7 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             if (weapon != null)
             {
+                // 如果目标的材料大于武器的材料，无效攻击
                 // If the attacker is using a weapon, check if the material is high enough to damage the target
                 if (target.MinMetalToHit > (WeaponMaterialTypes)weapon.NativeMaterialValue)
                 {
@@ -591,6 +594,7 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             chanceToHitMod = attacker.Skills.GetLiveSkillValue(skillID);
 
+            // 玩家
             if (attacker == player)
             {
                 // Apply swing modifiers
@@ -598,16 +602,19 @@ namespace DaggerfallWorkshop.Game.Formulas
                 damageModifiers += swingMods.damageMod;
                 chanceToHitMod += swingMods.toHitMod;
 
+                // 熟练度
                 // Apply proficiency modifiers
                 ToHitAndDamageMods proficiencyMods = CalculateProficiencyModifiers(attacker, weapon);
                 damageModifiers += proficiencyMods.damageMod;
                 chanceToHitMod += proficiencyMods.toHitMod;
 
+                // 种族克制
                 // Apply racial bonuses
                 ToHitAndDamageMods racialMods = CalculateRacialModifiers(attacker, weapon, player);
                 damageModifiers += racialMods.damageMod;
                 chanceToHitMod += racialMods.toHitMod;
 
+                // 背刺，命中增加
                 backstabChance = CalculateBackstabChance(player, null, isEnemyFacingAwayFromPlayer);
                 chanceToHitMod += backstabChance;
             }
@@ -618,12 +625,13 @@ namespace DaggerfallWorkshop.Game.Formulas
             // Get damage for weaponless attacks
             if (skillID == (short)DFCareer.Skills.HandToHand)
             {
+                // 如果是玩家或种族敌人
                 if (attacker == player || (AIAttacker != null && AIAttacker.EntityType == EntityTypes.EnemyClass))
                 {
                     if (CalculateSuccessfulHit(attacker, target, chanceToHitMod, struckBodyPart))
                     {
                         damage = CalculateHandToHandAttackDamage(attacker, target, damageModifiers, attacker == player);
-
+                        // 背刺成功，3倍伤害
                         damage = CalculateBackstabDamage(damage, backstabChance);
                     }
                 }
@@ -804,12 +812,15 @@ namespace DaggerfallWorkshop.Game.Formulas
 
             int chanceToHit = chanceToHitMod;
 
+            // 护甲对命中的影响
             // Get armor value for struck body part
             chanceToHit += CalculateArmorToHit(target, struckBodyPart);
 
+            // 肾上腺素
             // Apply adrenaline rush modifiers.
             chanceToHit += CalculateAdrenalineRushToHit(attacker, target);
 
+            // 魅力对命中的影响
             // Apply enchantment modifier
             chanceToHit += attacker.ChanceToHitModifier;
 

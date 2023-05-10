@@ -101,7 +101,7 @@ namespace DaggerfallConnect
         // Forbidden proficiencies
         public ProficiencyFlags ForbiddenProficiencies;
 
-        // Expert proficiencies
+        // Expert proficiencies 专家熟练度
         public ProficiencyFlags ExpertProficiencies;
 
         // Spell point multiplier
