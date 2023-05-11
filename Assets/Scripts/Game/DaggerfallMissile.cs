@@ -593,6 +593,7 @@ namespace DaggerfallWorkshop.Game
                 return;
             }
 
+            // 非玩家的伤害处理走 EnemyAttack
             if (caster != GameManager.Instance.PlayerEntityBehaviour)
             {
                 if (targetEntities[0] == caster.GetComponent<EnemySenses>().Target)
