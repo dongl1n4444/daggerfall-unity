@@ -12,6 +12,7 @@
 #region Using Statements
 using System;
 using System.Globalization;
+using System.Text;
 #endregion
 
 namespace DaggerfallConnect
@@ -221,6 +222,90 @@ namespace DaggerfallConnect
             // bytes [58-73]
             // Base attributes like STR, END, etc.
             public UInt16[] Attributes;
+
+            public override string ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"Name:{Name}\n");
+                for (int i = 0; i < Attributes.Length; ++i)
+                {
+                    sb.Append($"Attributes{i}:{Attributes[i]}\n");
+                }
+                sb.Append($"ResistanceFlags:{ResistanceFlags}\n");
+                sb.Append($"ImmunityFlags:{ImmunityFlags}\n");
+                sb.Append($"LowToleranceFlags:{LowToleranceFlags}\n");
+                sb.Append($"CriticalWeaknessFlags:{CriticalWeaknessFlags}\n");
+                sb.Append($"AbilityFlagsAndSpellPointsBitfield:{AbilityFlagsAndSpellPointsBitfield}\n");
+                sb.Append($"RapidHealing:{RapidHealing}\n");
+                sb.Append($"Regeneration:{Regeneration}\n");
+                sb.Append($"SpellAbsorptionFlags:{SpellAbsorptionFlags}\n");
+                sb.Append($"AttackModifierFlags:{AttackModifierFlags}\n");
+                sb.Append($"ForbiddenMaterialsFlags:{ForbiddenMaterialsFlags}\n");
+                sb.Append($"WeaponArmorShieldsBitfield:{WeaponArmorShieldsBitfield}\n");
+                sb.Append($"PrimarySkill1:{PrimarySkill1}\n");
+                sb.Append($"PrimarySkill2:{PrimarySkill2}\n");
+                sb.Append($"PrimarySkill3:{PrimarySkill3}\n");
+                sb.Append($"MajorSkill1:{MajorSkill1}\n");
+                sb.Append($"MajorSkill2:{MajorSkill2}\n");
+                sb.Append($"MajorSkill3:{MajorSkill3}\n");
+                sb.Append($"MinorSkill1:{MinorSkill1}\n");
+                sb.Append($"MinorSkill2:{MinorSkill2}\n");
+                sb.Append($"MinorSkill3:{MinorSkill3}\n");
+                sb.Append($"MinorSkill4:{MinorSkill4}\n");
+                sb.Append($"MinorSkill5:{MinorSkill5}\n");
+                sb.Append($"MinorSkill6:{MinorSkill6}\n");
+                sb.Append($"HitPointsPerLevel:{HitPointsPerLevel}\n");
+                sb.Append($"AdvancementMultiplier:{AdvancementMultiplier}\n");
+                sb.Append($"Unknown1:{Unknown1}\n");
+                for (int i = 0; i < Unknown2.Length; ++i)
+                    sb.Append($"Unknown2{i}:{Unknown2[i]}\n");
+                return sb.ToString();
+            }
+
+            
+            public string ToCSV()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"{Name},");
+                for (int i = 0; i < Attributes.Length; ++i)
+                {
+                    sb.Append($"{Attributes[i]},");
+                }
+                sb.Append($"{ResistanceFlags},");
+                sb.Append($"{ImmunityFlags},");
+                sb.Append($"{LowToleranceFlags},");
+                sb.Append($"{CriticalWeaknessFlags},");
+                sb.Append($"{AbilityFlagsAndSpellPointsBitfield},");
+                sb.Append($"{RapidHealing},");
+                sb.Append($"{Regeneration},");
+                sb.Append($"{SpellAbsorptionFlags},");
+                sb.Append($"{AttackModifierFlags},");
+                sb.Append($"{ForbiddenMaterialsFlags},");
+                sb.Append($"{WeaponArmorShieldsBitfield},");
+                sb.Append($"{PrimarySkill1},");
+                sb.Append($"{PrimarySkill2},");
+                sb.Append($"{PrimarySkill3},");
+                sb.Append($"{MajorSkill1},");
+                sb.Append($"{MajorSkill2},");
+                sb.Append($"{MajorSkill3},");
+                sb.Append($"{MinorSkill1},");
+                sb.Append($"{MinorSkill2},");
+                sb.Append($"{MinorSkill3},");
+                sb.Append($"{MinorSkill4},");
+                sb.Append($"{MinorSkill5},");
+                sb.Append($"{MinorSkill6},");
+                sb.Append($"{HitPointsPerLevel},");
+                sb.Append($"{AdvancementMultiplier},");
+                sb.Append($"{Unknown1},");
+                for (int i = 0; i < Unknown2.Length; ++i)
+                {
+                    if (i == 0)
+                        sb.Append($"{Unknown2[i]}");
+                    else
+                        sb.Append($";{Unknown2[i]}");
+                }
+                return sb.ToString();
+            }
         }
 
         /// <summary>

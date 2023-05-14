@@ -1058,6 +1058,14 @@ namespace DaggerfallWorkshop.Game.Utility
         {
             if (OnNewGame != null)
                 OnNewGame();
+
+            Debug.Log("xx-- OnNewGame > load monster careers 1");
+            for (int i = 0; i <= 42; ++i)
+            {
+                var mc = (MonsterCareers)i;
+                EnemyEntity.GetMonsterCareerTemplate(mc);
+            }
+            Debug.Log("xx-- OnNewGame > load monster careers 2");
         }
 
         #endregion

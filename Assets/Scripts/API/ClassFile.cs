@@ -180,6 +180,8 @@ namespace DaggerfallConnect.Arena2
                 cfg.Attributes[i] = reader.ReadUInt16();
             }
 
+            UnityEngine.Debug.Log("load class cfg > " + cfg.ToString());
+            UnityEngine.Debug.Log("load class cfg csv > " + cfg.ToCSV());
             // Structure data
             career = new DFCareer(cfg);
         }
