@@ -12,6 +12,7 @@
 using System;
 using System.IO;
 using DaggerfallWorkshop.Utility;
+using System.Text;
 
 namespace DaggerfallConnect.Save
 {
@@ -70,6 +71,22 @@ namespace DaggerfallConnect.Save
             {
                 effects = new EffectRecordData[3];
             }
+
+            public string ToCSV()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"{spellName},");
+                sb.Append($"{element},");
+                sb.Append($"{rangeType},");
+                sb.Append($"{cost},");
+                sb.Append($"{index},");
+                sb.Append($"{icon},");
+                for (int i = 0; i < effects.Length; ++i)
+                {
+                    sb.Append($"{effects[i].ToCSV(";")},");
+                }
+                return sb.ToString();
+            }
         }
 
         //just putting this here for now, should probably be moved in the future
@@ -91,6 +108,27 @@ namespace DaggerfallConnect.Save
             public int magnitudeLevelBase;
             public int magnitudeLevelHigh;
             public int magnitudePerLevel;
+
+            public string ToCSV(string c)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append($"{type}{c}");
+                sb.Append($"{subType}{c}");
+                sb.Append($"{descriptionTextIndex}{c}");
+                sb.Append($"{spellMakerTextIndex}{c}");
+                sb.Append($"{durationBase}{c}");
+                sb.Append($"{durationMod}{c}");
+                sb.Append($"{durationPerLevel}{c}");
+                sb.Append($"{chanceBase}{c}");
+                sb.Append($"{chanceMod}{c}");
+                sb.Append($"{chancePerLevel}{c}");
+                sb.Append($"{magnitudeBaseLow}{c}");
+                sb.Append($"{magnitudeBaseHigh}{c}");
+                sb.Append($"{magnitudeLevelBase}{c}");
+                sb.Append($"{magnitudeLevelHigh}{c}");
+                sb.Append($"{magnitudePerLevel}");
+                return sb.ToString();
+            }
         }
     }
 }

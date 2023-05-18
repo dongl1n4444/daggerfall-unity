@@ -622,6 +622,7 @@ namespace DaggerfallWorkshop.Game
                     // Remove health
                     enemyEntity.DecreaseHealth(damage);
 
+                    // 后处理，仇恨/犯罪
                     // Handle attack from player
                     enemyEntity.EntityBehaviour.HandleAttackFromSource(GameManager.Instance.PlayerEntityBehaviour);
 

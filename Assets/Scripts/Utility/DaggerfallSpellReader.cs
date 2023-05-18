@@ -157,6 +157,8 @@ namespace DaggerfallWorkshop.Utility
                 return false;
             }
 
+            Debug.Log("xx-- read spell data > " + spellRecord.ToCSV());
+
             return true;
 
         }

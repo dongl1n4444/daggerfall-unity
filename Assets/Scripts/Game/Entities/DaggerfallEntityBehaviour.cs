@@ -253,6 +253,7 @@ namespace DaggerfallWorkshop.Game.Entity
                     EnemyMotor enemyMotor = transform.GetComponent<EnemyMotor>();
                     if (enemyMotor)
                     {
+                        // 将区域内敌人变得敌对
                         if (!enemyMotor.IsHostile)
                         {
                             GameManager.Instance.MakeEnemiesHostile();

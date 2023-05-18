@@ -545,6 +545,8 @@ namespace DaggerfallWorkshop.Game.Formulas
             if (TryGetOverride("CalculateAttackDamage", out del))
                 return del(attacker, target, isEnemyFacingAwayFromPlayer, weaponAnimTime, weapon);
 
+            Debug.Log($"[ATK]{attacker.Name} start attack {target.Name} > {isEnemyFacingAwayFromPlayer} - {weaponAnimTime} - {(weapon == null ? "null" : weapon.shortName)}");
+
             int damageModifiers = 0;
             int damage = 0;
             int chanceToHitMod = 0;
@@ -593,6 +595,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
 
             chanceToHitMod = attacker.Skills.GetLiveSkillValue(skillID);
+            Debug.Log($"[ATK]attacker skill {skillID} value {chanceToHitMod}");
 
             // 玩家
             if (attacker == player)
@@ -601,26 +604,31 @@ namespace DaggerfallWorkshop.Game.Formulas
                 ToHitAndDamageMods swingMods = CalculateSwingModifiers(GameManager.Instance.WeaponManager.ScreenWeapon);
                 damageModifiers += swingMods.damageMod;
                 chanceToHitMod += swingMods.toHitMod;
+                Debug.Log($"[ATK]attacker swing mode {swingMods.damageMod}/{swingMods.toHitMod} > {damageModifiers}/{chanceToHitMod}");
 
                 // 熟练度
                 // Apply proficiency modifiers
                 ToHitAndDamageMods proficiencyMods = CalculateProficiencyModifiers(attacker, weapon);
                 damageModifiers += proficiencyMods.damageMod;
                 chanceToHitMod += proficiencyMods.toHitMod;
+                Debug.Log($"[ATK]attacker proficiency mode {proficiencyMods.damageMod}/{proficiencyMods.toHitMod} > {damageModifiers}/{chanceToHitMod}");
 
                 // 种族克制
                 // Apply racial bonuses
                 ToHitAndDamageMods racialMods = CalculateRacialModifiers(attacker, weapon, player);
                 damageModifiers += racialMods.damageMod;
                 chanceToHitMod += racialMods.toHitMod;
+                Debug.Log($"[ATK]attacker racial mode {racialMods.damageMod}/{racialMods.toHitMod} > {damageModifiers}/{chanceToHitMod}");
 
                 // 背刺，命中增加
                 backstabChance = CalculateBackstabChance(player, null, isEnemyFacingAwayFromPlayer);
                 chanceToHitMod += backstabChance;
+                Debug.Log($"[ATK]attacker backstab chance {backstabChance} > {chanceToHitMod}");
             }
 
             // Choose struck body part
             int struckBodyPart = CalculateStruckBodyPart();
+            Debug.Log($"[ATK]attacker struck body part {struckBodyPart}");
 
             // Get damage for weaponless attacks
             if (skillID == (short)DFCareer.Skills.HandToHand)
@@ -628,15 +636,19 @@ namespace DaggerfallWorkshop.Game.Formulas
                 // 如果是玩家或种族敌人
                 if (attacker == player || (AIAttacker != null && AIAttacker.EntityType == EntityTypes.EnemyClass))
                 {
+                    Debug.Log($"[ATK]player hit enemyclass with hand > {chanceToHitMod}");
                     if (CalculateSuccessfulHit(attacker, target, chanceToHitMod, struckBodyPart))
                     {
                         damage = CalculateHandToHandAttackDamage(attacker, target, damageModifiers, attacker == player);
+                        Debug.Log($"[ATK]player hit enemyclass with hand > {damage}");
                         // 背刺成功，3倍伤害
                         damage = CalculateBackstabDamage(damage, backstabChance);
+                        Debug.Log($"[ATK]player hit enemyclass with hand + backstable > {damage}");
                     }
                 }
                 else if (AIAttacker != null) // attacker is a monster
                 {
+                    Debug.Log($"[ATK]player hit monster with hand > {chanceToHitMod}");
                     // Handle multiple attacks by AI
                     int minBaseDamage = 0;
                     int maxBaseDamage = 0;
@@ -670,11 +682,15 @@ namespace DaggerfallWorkshop.Game.Formulas
                                 OnMonsterHit(AIAttacker, target, hitDamage);
 
                             damage += hitDamage;
+                            Debug.Log($"[ATK]player hit monster with hand + hit damage> {hitDamage}/{damage}");
                         }
 
                         // Apply bonus damage only when monster has actually hit, or they will accumulate bonus damage even for missed attacks and zero-damage attacks
                         if (hitDamage > 0)
+                        {
                             damage += GetBonusOrPenaltyByEnemyType(attacker, target);
+                            Debug.Log($"[ATK]player hit monster with hand + bonus damage> {damage}");
+                        }
 
                         ++attackNumber;
                     }
@@ -786,12 +802,18 @@ namespace DaggerfallWorkshop.Game.Formulas
             int maxBaseDamage = CalculateHandToHandMaxDamage(attacker.Skills.GetLiveSkillValue(DFCareer.Skills.HandToHand));
             int damage = UnityEngine.Random.Range(minBaseDamage, maxBaseDamage + 1);
 
+            Debug.Log($"xx-- str > {minBaseDamage} - {maxBaseDamage} - {damage} - {damageModifier}");
             // Apply damage modifiers.
             damage += damageModifier;
 
             // Apply strength modifier for players. It is not applied in classic despite what the in-game description for the Strength attribute says.
             if (player)
+            {
+                var str = attacker.Stats.LiveStrength;
+                Debug.Log($"xx-- str > {damage} - {str}");
                 damage += DamageModifier(attacker.Stats.LiveStrength);
+                Debug.Log($"xx-- str > {damage} - {str}");
+            }
 
             damage += GetBonusOrPenaltyByEnemyType(attacker, target);
 
@@ -811,31 +833,46 @@ namespace DaggerfallWorkshop.Game.Formulas
                 return del(attacker, target, chanceToHitMod, struckBodyPart);
 
             int chanceToHit = chanceToHitMod;
+            Debug.Log($"[ATK]calc hit init > {chanceToHit}");
 
             // 护甲对命中的影响
             // Get armor value for struck body part
             chanceToHit += CalculateArmorToHit(target, struckBodyPart);
+            Debug.Log($"[ATK]calc hit armor > {chanceToHit}");
 
             // 肾上腺素
             // Apply adrenaline rush modifiers.
             chanceToHit += CalculateAdrenalineRushToHit(attacker, target);
+            Debug.Log($"[ATK]calc hit adrenaline rush > {chanceToHit}");
 
             // 魅力对命中的影响
             // Apply enchantment modifier
             chanceToHit += attacker.ChanceToHitModifier;
+            Debug.Log($"[ATK]calc hit attack hit modifer > {chanceToHit}");
 
             // Apply stat differential modifiers. (default: luck and agility)
             chanceToHit += CalculateStatsToHit(attacker, target);
+            Debug.Log($"[ATK]calc hit attack starts > {chanceToHit}");
 
             // Apply skill modifiers. (default: dodge and crit strike)
             chanceToHit += CalculateSkillsToHit(attacker, target);
+            Debug.Log($"[ATK]calc hit attack skills > {chanceToHit}");
 
             // Apply monster modifier and biography adjustments.
             chanceToHit += CalculateAdjustmentsToHit(attacker, target);
+            Debug.Log($"[ATK]calc hit adjust hit > {chanceToHit}");
 
             chanceToHit = Mathf.Clamp(chanceToHit, 3, 97);
+            Debug.Log($"[ATK]calc hit clamp > {chanceToHit}");
 
-            return Dice100.SuccessRoll(chanceToHit);
+#if UNITY_EDITOR
+            if (DebugManager.Inst.playerAtkHitChance)
+                chanceToHit += DebugManager.Inst.playerAtkHitMod;
+#endif
+
+            bool ret = Dice100.SuccessRoll(chanceToHit);
+            Debug.Log($"[ATK]calc hit roll > {ret}");
+            return ret;
         }
 
         public static float GetMeleeWeaponAnimTime(PlayerEntity player, WeaponTypes weaponType, ItemHands weaponHands)

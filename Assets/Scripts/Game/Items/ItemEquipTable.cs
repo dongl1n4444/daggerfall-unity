@@ -99,7 +99,7 @@ namespace DaggerfallWorkshop.Game.Items
             // Get slot for this item
             EquipSlots slot = GetEquipSlot(item);
             if (slot == EquipSlots.None)
-                return null;
+                return null;    
 
             // If more than one item selected, equip only one
             if (item.IsAStack())

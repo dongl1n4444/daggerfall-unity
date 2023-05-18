@@ -181,6 +181,11 @@ namespace DaggerfallWorkshop.Game
         // 近战攻击
         private void MeleeDamage()
         {
+#if UNITY_EDITOR
+            if (DebugManager.Inst.blockMonsterAtk)
+                return;
+#endif
+
             if (entityBehaviour)
             {
                 EnemyEntity entity = entityBehaviour.Entity as EnemyEntity;
