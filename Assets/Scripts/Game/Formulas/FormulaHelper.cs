@@ -545,7 +545,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             if (TryGetOverride("CalculateAttackDamage", out del))
                 return del(attacker, target, isEnemyFacingAwayFromPlayer, weaponAnimTime, weapon);
 
-            Debug.Log($"[ATK]{attacker.Name} start attack {target.Name} > {isEnemyFacingAwayFromPlayer} - {weaponAnimTime} - {(weapon == null ? "null" : weapon.shortName)}");
+            Debug.Log($"[ATK]{attacker.Name} start attack {target.Name} > {isEnemyFacingAwayFromPlayer} - {weaponAnimTime} - {(weapon == null ? "null" : weapon.shortName + "/" + (WeaponMaterialTypes)weapon.nativeMaterialValue)}");
 
             int damageModifiers = 0;
             int damage = 0;
@@ -633,6 +633,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             // Get damage for weaponless attacks
             if (skillID == (short)DFCareer.Skills.HandToHand)
             {
+                Debug.Log($"[ATK]player hit enemy with hand");
                 // 如果是玩家或种族敌人
                 if (attacker == player || (AIAttacker != null && AIAttacker.EntityType == EntityTypes.EnemyClass))
                 {
@@ -699,8 +700,10 @@ namespace DaggerfallWorkshop.Game.Formulas
             // Handle weapon attacks
             else if (weapon != null)
             {
+                Debug.Log($"[ATK]player hit enemy with weapon > {weapon.shortName}");
                 // Apply weapon material modifier.
                 chanceToHitMod += CalculateWeaponToHit(weapon);
+                Debug.Log($"[ATK]player hit enemy with weapon chance > {chanceToHitMod}");
 
                 // Mod hook for adjusting final hit chance mod and adding new elements to calculation. (no-op in DFU)
                 chanceToHitMod = AdjustWeaponHitChanceMod(attacker, target, chanceToHitMod, weaponAnimTime, weapon);
@@ -708,8 +711,10 @@ namespace DaggerfallWorkshop.Game.Formulas
                 if (CalculateSuccessfulHit(attacker, target, chanceToHitMod, struckBodyPart))
                 {
                     damage = CalculateWeaponAttackDamage(attacker, target, damageModifiers, weaponAnimTime, weapon);
+                    Debug.Log($"[ATK]player hit enemy with weapon damage > {damage}");
 
                     damage = CalculateBackstabDamage(damage, backstabChance);
+                    Debug.Log($"[ATK]player hit enemy with weapon damage + backstab > {damage}");
                 }
 
                 // Handle poisoned weapons
@@ -720,6 +725,7 @@ namespace DaggerfallWorkshop.Game.Formulas
                 }
             }
 
+            Debug.Log($"[ATK]player hit enemy damage > {damage}");
             damage = Mathf.Max(0, damage);
 
             DamageEquipment(attacker, target, damage, weapon, struckBodyPart);
@@ -816,6 +822,7 @@ namespace DaggerfallWorkshop.Game.Formulas
             }
 
             damage += GetBonusOrPenaltyByEnemyType(attacker, target);
+            Debug.Log($"xx-- GetBonusOrPenaltyByEnemyType > {damage}");
 
             return damage;
         }

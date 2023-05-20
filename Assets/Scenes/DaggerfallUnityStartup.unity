@@ -510,8 +510,17 @@ MonoBehaviour:
   blockMonsterAtk: 1
   monsterAtkHitChance: 0
   mosterAtkHitMod: 0
-  playerAtkHitChance: 1
+  playerAtkHitChance: 0
   playerAtkHitMod: 100
+  debugPlrState: 0
+  debugPlrStrength: 0
+  debugPlrIntelligence: 0
+  debugPlrWillpower: 0
+  debugPlrAgility: 0
+  debugPlrEndurance: 0
+  debugPlrPersonality: 0
+  debugPlrSpeed: 0
+  debugPlrLuck: 0
 --- !u!4 &801206059
 Transform:
   m_ObjectHideFlags: 0
